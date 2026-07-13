@@ -34,7 +34,7 @@ services:
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     restart: unless-stopped
     ports:
-      - "${HTTP_PORT:-8090}:80"
+      - "${HTTP_PORT:-443}:80"
     depends_on:
       - back
 
