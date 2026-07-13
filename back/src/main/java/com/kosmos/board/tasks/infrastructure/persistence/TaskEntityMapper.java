@@ -19,7 +19,8 @@ final class TaskEntityMapper {
                 entity.points,
                 entity.label,
                 entity.resolutionDays,
-                entity.position);
+                entity.position,
+                entity.createdAt);
     }
 
     static TaskEntity toEntity(Task task) {

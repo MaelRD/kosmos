@@ -6,9 +6,20 @@ import BoardView from '../components/BoardView';
 import BacklogView from '../components/BacklogView';
 import ReportsView from '../components/ReportsView';
 import AgendaView from '../components/AgendaView';
+import CrewView from '../components/CrewView';
 import TaskModal from '../components/TaskModal';
 import CreateModal from '../components/CreateModal';
-import { createTask, deleteTask, listTasks, listUsers, moveTask, updateTask } from '../api';
+import {
+  assignCompanies,
+  createTask,
+  deleteTask,
+  listCompanies,
+  listCompanyAssignments,
+  listTasks,
+  listUsers,
+  moveTask,
+  updateTask,
+} from '../api';
 
 const SHOW_POINTS = true;
 const COMPACT = false;
@@ -41,6 +52,8 @@ export default function BoardPage() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [members, setMembers] = useState({});
   const [membersList, setMembersList] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [companyAssignments, setCompanyAssignments] = useState({});
 
   useEffect(() => {
     let token = null;
@@ -74,7 +87,25 @@ export default function BoardPage() {
     listTasks()
       .then(setTasks)
       .catch((err) => setTaskError(err.message));
+    listCompanies()
+      .then(setCompanies)
+      .catch(() => {
+        // company catalog failed to load — crew view still works, just without assignment
+      });
+    listCompanyAssignments()
+      .then((rows) => {
+        const map = Object.fromEntries(rows.map((r) => [r.userId, r.companyIds]));
+        setCompanyAssignments(map);
+      })
+      .catch(() => {
+        // assignments failed to load — crew view still works, just shows none assigned
+      });
   }, [rawUser]);
+
+  const handleAssignCompanies = (userId, companyIds) => {
+    setCompanyAssignments((prev) => ({ ...prev, [userId]: companyIds }));
+    assignCompanies(userId, companyIds).catch((err) => setTaskError(err.message));
+  };
 
   const currentUser = rawUser && {
     name: rawUser.name,
@@ -202,8 +233,8 @@ export default function BoardPage() {
     deleteTask(id).catch((err) => setTaskError(err.message));
   };
 
-  const openCreateFromColumn = (columnId) => {
-    setNewTask((nt) => ({ ...nt, column: columnId }));
+  const openCreateFromColumn = (columnId, assignee) => {
+    setNewTask((nt) => ({ ...nt, column: columnId, assignee: assignee || nt.assignee }));
     setIsCreating(true);
   };
 
@@ -290,7 +321,7 @@ export default function BoardPage() {
             tasks={tasks}
             members={members}
             onOpenTask={setSelectedTaskId}
-            onCreate={() => openCreateFromColumn('backlog')}
+            onCreate={() => openCreateFromColumn('todo')}
           />
         )}
 
@@ -300,6 +331,17 @@ export default function BoardPage() {
 
         {activeNav === 'agenda' && (
           <AgendaView currentUser={currentUser} membersList={membersList} />
+        )}
+
+        {activeNav === 'crew' && (
+          <CrewView
+            tasks={tasks}
+            membersList={membersList}
+            companies={companies}
+            companyAssignments={companyAssignments}
+            onAssignCompanies={handleAssignCompanies}
+            onOpenTask={setSelectedTaskId}
+          />
         )}
       </div>
 

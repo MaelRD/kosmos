@@ -64,7 +64,7 @@ export default function Header({
           Tablero
         </button>
         <button onClick={() => onNavChange('backlog')} style={navButtonStyle(activeNav === 'backlog')}>
-          Backlog
+          Lista
         </button>
         <button onClick={() => onNavChange('agenda')} style={navButtonStyle(activeNav === 'agenda')}>
           Agenda
@@ -74,6 +74,9 @@ export default function Header({
           style={navButtonStyle(activeNav === 'reports')}
         >
           Informes
+        </button>
+        <button onClick={() => onNavChange('crew')} style={navButtonStyle(activeNav === 'crew')}>
+          Tripulación
         </button>
       </div>
 

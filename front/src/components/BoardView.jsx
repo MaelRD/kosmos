@@ -106,7 +106,7 @@ export default function BoardView({
                 marginTop: 4,
               }}
             >
-              Cinturón de Kuiper
+              Que odoo no explote
             </div>
           </div>
           <button

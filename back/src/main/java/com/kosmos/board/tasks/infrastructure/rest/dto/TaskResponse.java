@@ -4,6 +4,7 @@ import com.kosmos.board.tasks.domain.model.BoardColumn;
 import com.kosmos.board.tasks.domain.model.Priority;
 import com.kosmos.board.tasks.domain.model.Task;
 import com.kosmos.board.tasks.domain.model.TaskType;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record TaskResponse(
@@ -17,7 +18,8 @@ public record TaskResponse(
         int points,
         String label,
         Integer resolutionDays,
-        int position) {
+        int position,
+        OffsetDateTime createdAt) {
 
     public static TaskResponse from(Task task) {
         return new TaskResponse(
@@ -31,6 +33,7 @@ public record TaskResponse(
                 task.points(),
                 task.label(),
                 task.resolutionDays(),
-                task.position());
+                task.position(),
+                task.createdAt());
     }
 }

@@ -1,11 +1,28 @@
+import { useState } from 'react';
 import TypeIcon from './TypeIcon';
-import { PRIORITIES } from '../constants';
+import { COLUMNS, PRIORITIES } from '../constants';
 
 const typeColor = (type) =>
   type === 'story' ? '#FFCB3D' : type === 'task' ? '#3E8EDE' : '#FF4D4D';
 
+const PRIORITY_ORDER = { critical: 0, high: 1, medium: 2, low: 3 };
+
+const SORTERS = {
+  priority: (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority],
+  date: (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+  user: (a, b) => a.assignee.localeCompare(b.assignee),
+};
+
+const SORT_OPTIONS = [
+  { id: 'priority', label: 'Prioridad' },
+  { id: 'date', label: 'Fecha' },
+  { id: 'user', label: 'Usuario' },
+];
+
 export default function BacklogView({ tasks, members, onOpenTask, onCreate }) {
-  const items = tasks.filter((t) => t.column === 'backlog');
+  const [sortBy, setSortBy] = useState('priority');
+
+  const items = tasks.slice().sort(SORTERS[sortBy]);
 
   return (
     <div style={{ padding: '28px 28px 60px' }}>
@@ -29,14 +46,14 @@ export default function BacklogView({ tasks, members, onOpenTask, onCreate }) {
               textTransform: 'uppercase',
             }}
           >
-            Backlog
+            Tareas
           </div>
           <div style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: 28, fontWeight: 800, marginTop: 4 }}>
-            Lo pendiente
+            Todas las tareas
           </div>
         </div>
         <button
-          onClick={onCreate}
+          onClick={() => onCreate()}
           style={{
             background: '#FFCB3D',
             border: '2.5px solid #1e1b16',
@@ -50,8 +67,43 @@ export default function BacklogView({ tasks, members, onOpenTask, onCreate }) {
             boxShadow: '3px 3px 0 #1e1b16',
           }}
         >
-          + Nuevo pendiente
+          + Nueva tarea
         </button>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: '#6b6558' }}>Ordenar por</div>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            background: '#ffffff',
+            border: '2.5px solid #1e1b16',
+            borderRadius: 12,
+            padding: 3,
+          }}
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setSortBy(opt.id)}
+              style={{
+                padding: '7px 14px',
+                borderRadius: 9,
+                border: 'none',
+                fontSize: 12.5,
+                fontWeight: 800,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                background: sortBy === opt.id ? '#ffcb3d' : 'transparent',
+                color: '#1e1b16',
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {items.length === 0 && (
@@ -67,20 +119,15 @@ export default function BacklogView({ tasks, members, onOpenTask, onCreate }) {
             textAlign: 'center',
           }}
         >
-          Sin pendientes en el backlog. Todo lo capturado ya está en marcha.
+          Sin tareas todavía. Todo lo capturado ya está en marcha.
         </div>
       )}
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {items.map((task) => {
           const pr = PRIORITIES[task.priority];
           const memberColor = members[task.assignee] || '#9B7BFF';
+          const columnLabel = (COLUMNS.find((c) => c.id === task.column) || {}).title || task.column;
           return (
             <div
               key={task.id}
@@ -127,6 +174,21 @@ export default function BacklogView({ tasks, members, onOpenTask, onCreate }) {
                 >
                   {task.title}
                 </div>
+              </div>
+
+              <div
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  color: '#1e1b16',
+                  background: '#eee6ff',
+                  border: '1.5px solid #1e1b16',
+                  padding: '2px 8px',
+                  borderRadius: 20,
+                  flex: 'none',
+                }}
+              >
+                {columnLabel}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 'none' }}>

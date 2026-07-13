@@ -69,6 +69,18 @@ export function listUsers() {
   return authRequest('/api/users', 'GET');
 }
 
+export function listCompanies() {
+  return authRequest('/api/companies', 'GET');
+}
+
+export function listCompanyAssignments() {
+  return authRequest('/api/companies/assignments', 'GET');
+}
+
+export function assignCompanies(userId, companyIds) {
+  return authRequest(`/api/companies/assignments/${userId}`, 'PUT', { companyIds });
+}
+
 export function listAgendaEvents(from, to) {
   const params = new URLSearchParams({ from, to });
   return authRequest(`/api/agenda-events?${params}`, 'GET');
@@ -127,6 +139,7 @@ function taskFromApi(t) {
     points: String(t.points),
     label: t.label,
     resolutionDays: t.resolutionDays,
+    createdAt: t.createdAt,
   };
 }
 

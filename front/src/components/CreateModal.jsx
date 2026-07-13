@@ -102,7 +102,6 @@ export default function CreateModal({ newTask, members, onChange, onClose, onSub
             onChange={(e) => onChange('column', e.target.value)}
             style={selectStyle}
           >
-            <option value="backlog">Backlog</option>
             <option value="todo">Por explorar</option>
             <option value="progress">En tránsito</option>
             <option value="review">En revisión</option>

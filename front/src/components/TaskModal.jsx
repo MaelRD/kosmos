@@ -138,7 +138,6 @@ export default function TaskModal({ task, members, onClose, onChange, onDelete }
           <div>
             <div style={fieldLabel}>Estado</div>
             <select value={task.column} onChange={(e) => onChange('column', e.target.value)} style={selectStyle}>
-              <option value="backlog">Backlog</option>
               <option value="todo">Por explorar</option>
               <option value="progress">En tránsito</option>
               <option value="review">En revisión</option>

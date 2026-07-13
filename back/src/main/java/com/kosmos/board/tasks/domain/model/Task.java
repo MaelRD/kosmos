@@ -1,5 +1,6 @@
 package com.kosmos.board.tasks.domain.model;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public final class Task {
     private final String label;
     private final Integer resolutionDays;
     private final int position;
+    private final OffsetDateTime createdAt;
 
     public Task(
             UUID id,
@@ -32,7 +34,8 @@ public final class Task {
             int points,
             String label,
             Integer resolutionDays,
-            int position) {
+            int position,
+            OffsetDateTime createdAt) {
         this.id = Objects.requireNonNull(id, "id");
         this.title = requireNonBlank(title, "title");
         this.description = description == null ? "" : description;
@@ -44,6 +47,7 @@ public final class Task {
         this.label = requireNonBlank(label, "label");
         this.resolutionDays = resolutionDays;
         this.position = position;
+        this.createdAt = createdAt;
     }
 
     public static Task create(
@@ -57,12 +61,14 @@ public final class Task {
             String label,
             int position) {
         return new Task(
-                UUID.randomUUID(), title, description, type, priority, assignee, column, points, label, null, position);
+                UUID.randomUUID(), title, description, type, priority, assignee, column, points, label, null,
+                position, null);
     }
 
     public Task withDetails(String title, String description, TaskType type, Priority priority,
                              String assignee, BoardColumn column, int points, String label) {
-        return new Task(id, title, description, type, priority, assignee, column, points, label, resolutionDays, position);
+        return new Task(id, title, description, type, priority, assignee, column, points, label, resolutionDays,
+                position, createdAt);
     }
 
     public Task movedTo(BoardColumn newColumn, String newAssignee, int newPosition) {
@@ -70,7 +76,7 @@ public final class Task {
                 ? Integer.valueOf(0)
                 : this.resolutionDays;
         return new Task(id, title, description, type, priority, newAssignee, newColumn, points, label,
-                newResolutionDays, newPosition);
+                newResolutionDays, newPosition, createdAt);
     }
 
     private static String requireNonBlank(String value, String field) {
@@ -122,6 +128,10 @@ public final class Task {
 
     public int position() {
         return position;
+    }
+
+    public OffsetDateTime createdAt() {
+        return createdAt;
     }
 
     @Override
